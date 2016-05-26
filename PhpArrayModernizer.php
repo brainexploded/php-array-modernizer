@@ -28,7 +28,7 @@ class PhpArrayModernizer
                 if ($entry != "." && $entry != "..") {
 
                     if (is_dir($path.'/'.$entry)) {
-                        traverse($path.'/'.$entry);
+                        $this->traverse($path.'/'.$entry);
                     } else {
                         $this->parseFile($path.'/'.$entry);
                     }
