@@ -5,8 +5,8 @@ class PhpArrayModernizer
     protected $searchSeq = [
         '(//).*?$',
         '/(\*).*?\*/',
-        '(").*?"',
-        '(\').*?\'',
+        '(")[^"\\\\]*(?:\\\\.[^"\\\\]*)*"',
+        "(')[^'\\\\]*(?:\\\\.[^'\\\\]*)*'",
         '\b(array)\s*\(',
         '(\()',
         '(\))'
@@ -96,7 +96,6 @@ class PhpArrayModernizer
                 }
             }
         }
-
         return $data;
     }
 }
