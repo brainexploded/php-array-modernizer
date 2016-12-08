@@ -1,0 +1,12 @@
+{
+  "name": "brainexploded/php-array-modernizer",
+  "license": "MIT",
+  "autoload": {
+    "psr-4" : {
+      "Brainexploded\\" : ""
+    }
+  },
+  "require": {
+    "brainexploded/fstools": "dev-master"
+  }
+}

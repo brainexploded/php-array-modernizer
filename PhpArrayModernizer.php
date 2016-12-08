@@ -1,4 +1,7 @@
 <?php
+namespace Brainexploded;
+
+use Brainexploded\FSTools\FSTraverser;
 
 class PhpArrayModernizer
 {
@@ -11,59 +14,28 @@ class PhpArrayModernizer
         '(\()',
         '(\))'
     ];
-    
-    public function isExtension($filename, $extension)
-    {
-        if (substr($filename, -(strlen($extension)+1)) == ".$extension") {
-            return true;
-        }
-        
-        return false;
-    }
-    
-    public function traverse($path)
-    {
-        if ($handle = opendir($path)) {
-            while (false !== ($entry = readdir($handle))) {
-                if ($entry != "." && $entry != "..") {
 
-                    if (is_dir($path.'/'.$entry)) {
-                        $this->traverse($path.'/'.$entry);
-                    } else {
-                        $this->parseFile($path.'/'.$entry);
-                    }
-                }
-            }
-        }
-    }
-    
-    public function parseFile($filePath)
+    public function modernize($path)
     {
-        if (!file_exists($filePath)) {
-        return;
-        }
-        if ($this->isExtension($filePath, 'php')) {
-            $handle = fopen($filePath, 'rb');
-            if ($handle === false) {
-                echo "[ERROR] cannot open file $filePath", PHP_EOL;
-                return;
-            }
-            $size = filesize($filePath);
-            if ($size > 0) {
-                $content = fread($handle, filesize($filePath));
-                
-                $handle_write = fopen($filePath, 'wb');
+        $tr = new FSTraverser(
+            // root dir
+            $path,
+            // callback
+            function($path, $entry, $content) {
+                $fullpath = $path.'/'.$entry;
+
+                $handle_write = fopen($fullpath, 'wb');
                 fwrite($handle_write, $this->process($content));
                 fclose($handle_write);
-                
-                unset($content);
-            } else {
-                echo "[NOTICE] file $filePath is empty!", PHP_EOL;
-            }
-            fclose($handle);
-        }
+            },
+            // exclude nodes
+            ['.git'],
+            // allowed extensions
+            ['php']
+        );
+        $tr->go(true);
     }
-    
+
     protected function process($data)
     {
         $offset = 0;
